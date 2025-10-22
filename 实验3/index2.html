@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Navigator Details</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 15px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .info-item {
+            padding: 12px 15px;
+            border-left: 4px solid #3498db;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .info-item:hover {
+            transform: translateY(-3px);
+            background-color: #e8f4fc;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            color: #34495e;
+            word-break: break-all;
+        }
+        .status-online {
+            color: #27ae60;
+        }
+        .status-offline {
+            color: #e74c3c;
+        }
+        .status-yes {
+            color: #27ae60;
+        }
+        .status-no {
+            color: #e74c3c;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        @media (max-width: 600px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Browser Information</h1>
+    <div class="container">
+        <div id="browser-info" class="info-grid"></div>
+    </div>
+    <div class="footer">
+        This information is provided by the Navigator object
+    </div>
+    
+    <script>
+        const infoContainer = document.getElementById('browser-info');
+                const infoItems = [
+            {
+                label: 'Browser Name',
+                value: navigator.appName,
+                icon: '🌐'
+            },
+            {
+                label: 'Browser Version',
+                value: navigator.appVersion.split(' ')[0],
+                icon: '📋'
+            },
+            {
+                label: 'Platform',
+                value: navigator.platform,
+                icon: '💻'
+            },
+            {
+                label: 'User Agent',
+                value: navigator.userAgent,
+                icon: '🆔'
+            },
+            {
+                label: 'Language',
+                value: navigator.language,
+                icon: '🗣️'
+            },
+            {
+                label: 'Online Status',
+                value: navigator.onLine,
+                type: 'status',
+                icon: '📶'
+            },
+            {
+                label: 'Cookies Enabled',
+                value: navigator.cookieEnabled,
+                type: 'boolean',
+                icon: '🍪'
+            },
+            {
+                label: 'Java Enabled',
+                value: navigator.javaEnabled(),
+                type: 'boolean',
+                icon: '☕'
+            }
+        ];
+        
+   
+        infoItems.forEach(item => {
+            const infoElement = document.createElement('div');
+            infoElement.className = 'info-item';
+            
+            const labelElement = document.createElement('div');
+            labelElement.className = 'info-label';
+            labelElement.textContent = `${item.icon} ${item.label}:`;
+            
+            const valueElement = document.createElement('div');
+            valueElement.className = 'info-value';
+            
+            if (item.type === 'status') {
+                valueElement.textContent = item.value ? 'Online' : 'Offline';
+                valueElement.classList.add(item.value ? 'status-online' : 'status-offline');
+            } else if (item.type === 'boolean') {
+                valueElement.textContent = item.value ? 'Yes' : 'No';
+                valueElement.classList.add(item.value ? 'status-yes' : 'status-no');
+            } else {
+                valueElement.textContent = item.value;
+            }
+            
+            infoElement.appendChild(labelElement);
+            infoElement.appendChild(valueElement);
+            infoContainer.appendChild(infoElement);
+        });
+    </script>
+</body>
+</html>

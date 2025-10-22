@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Lab - Exercise 1</title>
+</head>
+<body>
+    <div id="content"></div>
+    
+    <script>
+      
+        const contentDiv = document.getElementById('content');
+        
+        const heading = document.createElement('h1');
+        heading.textContent = 'Welcome to JavaScript Lab';
+        contentDiv.appendChild(heading);
+        
+        const paragraph1 = document.createElement('p');
+        paragraph1.textContent = 'This is a paragraph created using JavaScript DOM manipulation.';
+        contentDiv.appendChild(paragraph1);
+        
+        const paragraph2 = document.createElement('p');
+        paragraph2.textContent = 'JavaScript allows us to dynamically create content on web pages.';
+        contentDiv.appendChild(paragraph2);
+    </script>
+</body>
+</html>

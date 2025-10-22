@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Number Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        .number-display {
+            font-size: 5rem;
+            font-weight: bold;
+            color: #2575fc;
+            margin: 30px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .generate-btn {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+        .generate-btn:active {
+            transform: translateY(1px);
+        }
+        .range-info {
+            color: #7f8c8d;
+            margin-top: 20px;
+            font-size: 1rem;
+        }
+        .history {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .history-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .history-item {
+            background-color: #f1f8ff;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #2575fc;
+        }
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Random Number Generator</h1>
+        
+        <div class="number-display" id="random-number">--</div>
+        
+        <button class="generate-btn" id="generate-btn">Generate New Number</button>
+        
+        <div class="range-info">Generates a random number between 1 and 100</div>
+        
+        <div class="history">
+            <div class="history-title">Recent Numbers</div>
+            <div class="history-list" id="history-list"></div>
+        </div>
+    </div>
+    
+    <script>
+        // 获取DOM元素
+        const randomNumberElement = document.getElementById('random-number');
+        const generateButton = document.getElementById('generate-btn');
+        const historyList = document.getElementById('history-list');
+        
+        // 存储历史记录
+        let numberHistory = [];
+        
+        // 生成随机数的不同方法
+        function createRandomValue() {
+            // 使用不同的方法生成1-100的随机整数
+            // 方法1: 使用crypto.getRandomValues()如果可用
+            if (window.crypto && window.crypto.getRandomValues) {
+                const array = new Uint32Array(1);
+                window.crypto.getRandomValues(array);
+                return (array[0] % 100) + 1;
+            }
+            // 方法2: 使用Date.now()作为种子的一部分
+            const timeBasedRandom = Date.now() % 100;
+            const mathRandom = Math.floor(Math.random() * 100) + 1;
+            // 结合两种方法
+            return ((timeBasedRandom + mathRandom) % 100) + 1;
+        }
+        
+        // 显示随机数
+        function displayRandomNumber() {
+            // 生成随机数
+            const randomValue = createRandomValue();
+            
+            // 更新显示
+            randomNumberElement.textContent = randomValue;
+            randomNumberElement.classList.add('pulse');
+            
+            // 添加到历史记录
+            numberHistory.unshift(randomValue);
+            if (numberHistory.length > 5) {
+                numberHistory.pop();
+            }
+            
+            // 更新历史记录显示
+            updateHistoryDisplay();
+            
+            // 移除动画类
+            setTimeout(() => {
+                randomNumberElement.classList.remove('pulse');
+            }, 500);
+        }
+        
+        // 更新历史记录显示
+        function updateHistoryDisplay() {
+            historyList.innerHTML = '';
+                        numberHistory.forEach(num => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.textContent = num;
+                historyList.appendChild(historyItem);
+            });
+        }
+                displayRandomNumber();
+                generateButton.addEventListener('click', displayRandomNumber);
+                document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space' || event.code === 'Enter') {
+                displayRandomNumber();
+            }
+        });
+    </script>
+</body>
