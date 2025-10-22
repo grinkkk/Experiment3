@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guessing Challenge</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .game-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #764ba2;
+            padding-bottom: 15px;
+        }
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .info-item {
+            text-align: center;
+            flex: 1;
+        }
+        .info-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #764ba2;
+        }
+        .input-group {
+            display: flex;
+            margin: 20px 0;
+            gap: 10px;
+        }
+        #guess-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #ced4da;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            transition: border-color 0.3s;
+        }
+        #guess-input:focus {
+            border-color: #764ba2;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.2);
+        }
+        .submit-btn {
+            background: linear-gradient(to right, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        .submit-btn:active {
+            transform: translateY(1px);
+        }
+        .submit-btn:disabled {
+            background: #adb5bd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        #message {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        .message-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .guesses-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        .guess-item {
+            background-color: #e9ecef;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        .guess-item.correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .game-over {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .game-over h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .play-again-btn {
+            background: linear-gradient(to right, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 15px;
+        }
+        .play-again-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .shake {
+            animation: shake 0.5s ease;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Number Guessing Challenge</h1>
+        <p>I'm thinking of a number between 1 and 100. You have 10 attempts to guess it!</p>
+        
+        <div id="game-content">
+            <div class="game-info">
+                <div class="info-item">
+                    <div class="info-label">Turns Remaining</div>
+                    <div class="info-value" id="turns">10</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Previous Guesses</div>
+                    <div class="guesses-list" id="previous-guesses"></div>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <input type="number" id="guess-input" min="1" max="100" placeholder="Enter your guess (1-100)">
+                <button class="submit-btn" id="submit-btn">Submit Guess</button>
+            </div>
+            
+            <div id="message"></div>
+        </div>
+        
+        <div id="game-over" class="game-over" style="display: none;">
+            <h2>Game Over!</h2>
+            <div id="result-message"></div>
+            <button class="play-again-btn" id="play-again-btn">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // 游戏状态管理
+        const GameState = {
+            targetNumber: null,
+            turnsRemaining: 10,
+            previousGuesses: [],
+            gameActive: false,
+            
+            // 生成随机数（使用不同的方法）
+            generateRandomNumber: function() {
+                // 使用时间戳和Math.random()的组合
+                const timeComponent = Date.now() % 100;
+                const randomComponent = Math.floor(Math.random() * 100) + 1;
+                return ((timeComponent + randomComponent) % 100) + 1;
+            },
+            
+            // 初始化游戏
+            initialize: function() {
+                this.targetNumber = this.generateRandomNumber();
+                this.turnsRemaining = 10;
+                this.previousGuesses = [];
+                this.gameActive = true;
+                
+                // 更新UI
+                UI.updateTurnsRemaining(this.turnsRemaining);
+                UI.updatePreviousGuesses(this.previousGuesses);
+                UI.clearMessage();
+                UI.clearInput();
+                
+                // 显示游戏内容，隐藏游戏结束界面
+                UI.showGameContent();
+                
+                console.log('Target number (for testing):', this.targetNumber);
+            },
+            
+            // 处理猜测
+            processGuess: function(guess) {
+                if (!this.gameActive) return;
+                
+                // 验证输入
+                if (!this.isValidGuess(guess)) {
+                    UI.showMessage('Please enter a valid number between 1 and 100.', 'error');
+                    return false;
+                }
+                
+                // 添加到历史记录
+                this.previousGuesses.push(guess);
+                UI.updatePreviousGuesses(this.previousGuesses);
+                
+                // 检查猜测
+                if (guess === this.targetNumber) {
+                    // 正确猜测
+                    this.endGame(true);
+                    return true;
+                } else {
+                    // 错误猜测
+                    this.turnsRemaining--;
+                    UI.updateTurnsRemaining(this.turnsRemaining);
+                    
+                    if (this.turnsRemaining === 0) {
+                        this.endGame(false);
+                    } else {
+                        const hint = guess < this.targetNumber ? 'too low' : 'too high';
+                        UI.showMessage(`Wrong! Your guess is ${hint}. Try again!`, 'info');
+                    }
+                    return false;
+                }
+            },
+            
+            // 验证猜测
+            isValidGuess: function(guess) {
+                return !isNaN(guess) && guess >= 1 && guess <= 100;
+            },
+            
+            // 结束游戏
+            endGame: function(won) {
+                this.gameActive = false;
+                UI.showGameOver(won, this.targetNumber, this.turnsRemaining);
+            }
+        };
+        
+        // UI管理
+        const UI = {
+            // 更新剩余次数
+            updateTurnsRemaining: function(turns) {
+                const turnsElement = document.getElementById('turns');
+                turnsElement.textContent = turns;
+                
+                // 添加动画效果
+                turnsElement.classList.add('pulse');
+                setTimeout(() => {
+                    turnsElement.classList.remove('pulse');
+                }, 500);
+                
+                // 根据剩余次数改变颜色
+                if (turns <= 3) {
+                    turnsElement.style.color = '#dc3545';
+                } else if (turns <= 6) {
+                    turnsElement.style.color = '#ffc107';
+                } else {
+                    turnsElement.style.color = '#764ba2';
+                }
+            },
+            
+            // 更新历史猜测
+            updatePreviousGuesses: function(guesses) {
+                const guessesContainer = document.getElementById('previous-guesses');
+                guessesContainer.innerHTML = '';
+                
+                if (guesses.length === 0) {
+                    const emptyMessage = document.createElement('div');
+                    emptyMessage.textContent = 'None';
+                    emptyMessage.style.color = '#6c757d';
+                    guessesContainer.appendChild(emptyMessage);
+                    return;
+                }
+                
+                guesses.forEach(guess => {
+                    const guessElement = document.createElement('div');
+                    guessElement.className = 'guess-item';
+                    
+                    // 标记正确猜测
+                    if (guess === GameState.targetNumber) {
+                        guessElement.classList.add('correct');
+                    }
+                    
+                    guessElement.textContent = guess;
+                    guessesContainer.appendChild(guessElement);
+                });
+            },
+            
+            // 显示消息
+            showMessage: function(message, type) {
+                const messageElement = document.getElementById('message');
+                messageElement.textContent = message;
+                messageElement.className = type;
+                messageElement.classList.add('message-visible');
+                
+                // 添加抖动效果（如果是错误消息）
+                if (type === 'error') {
+                    messageElement.classList.add('shake');
+                    setTimeout(() => {
+                        messageElement.classList.remove('shake');
+                    }, 500);
+                }
+            },
+            
+            // 清除消息
+            clearMessage: function() {
+                const messageElement = document.getElementById('message');
+                messageElement.textContent = '';
+                messageElement.className = '';
+                messageElement.classList.remove('message-visible');
+            },
+            
+            // 清除输入
+            clearInput: function() {
+                document.getElementById('guess-input').value = '';
+            },
+            
+            // 显示游戏内容
+            showGameContent: function() {
+                document.getElementById('game-content').style.display = 'block';
+                document.getElementById('game-over').style.display = 'none';
+                document.getElementById('guess-input').focus();
+            },
+            
+            // 显示游戏结束界面
+            showGameOver: function(won, targetNumber, turnsRemaining) {
+                const resultMessage = document.getElementById('result-message');
+                
+                if (won) {
+                    resultMessage.innerHTML = `<div class="success">You won! The number was ${targetNumber}. You had ${turnsRemaining} turns remaining.</div>`;
+                } else {
+                    resultMessage.innerHTML = `<div class="error">You lost! The number was ${targetNumber}. Better luck next time!</div>`;
+                }
+                
+                document.getElementById('game-content').style.display = 'none';
+                document.getElementById('game-over').style.display = 'block';
+            }
+        };
+        
+        // 事件处理
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化游戏
+            GameState.initialize();
+            
+            // 提交按钮点击事件
+            document.getElementById('submit-btn').addEventListener('click', function() {
+                const guessInput = document.getElementById('guess-input');
+                const guess = parseInt(guessInput.value);
+                GameState.processGuess(guess);
+                guessInput.value = '';
+            });
+            
+            // 输入框回车事件
+            document.getElementById('guess-input').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    const guess = parseInt(this.value);
+                    GameState.processGuess(guess);
+                    this.value = '';
+                }
+            });
+            
+            // 再来一次按钮事件
+            document.getElementById('play-again-btn').addEventListener('click', function() {
+                GameState.initialize();
+            });
+            
+            // 输入验证
+            document.getElementById('guess-input').addEventListener('input', function() {
+                const value = parseInt(this.value);
+                if (value < 1 || value > 100) {
+                    this.style.borderColor = '#dc3545';
+                } else {
+                    this.style.borderColor = '#28a745';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
